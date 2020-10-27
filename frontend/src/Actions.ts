@@ -2,6 +2,7 @@ import { Action, Dispatch } from "redux";
 import { Store, Rest } from "majsoul-api";
 import { ThunkAction } from "redux-thunk";
 import { IState, Session, ContestTeam } from "./State";
+import { SplitChunksPlugin } from "webpack";
 
 export type AppThunk<AType extends Action<ActionType>, TReturn = void> =  ThunkAction<TReturn, IState, unknown, AType>;
 
@@ -65,11 +66,32 @@ export interface GetContests extends Action<ActionType.GetContests> {
 	contests: Store.Contest[];
 }
 
-export function buildApiUrl(path: string): URL {
-	if (process.env.NODE_ENV === "production") {
-		return new URL(`${location.protocol}//${location.host}/api/${path}`);
+enum Server {
+	Connector,
+	Rest
+}
+
+function baseApi(server: Server): string {
+	switch (server) {
+		case Server.Rest: {
+			if (process.env.NODE_ENV === "production") {
+				return "/api/riichi/";
+			}
+			return ":9515/";
+		} case Server.Connector: {
+			if (process.env.NODE_ENV === "production") {
+				return "/api/majsoul/";
+			}
+			return ":9516/";
+		}
 	}
-	return new URL(`${location.protocol}//${location.hostname}:9515/${path}`);
+}
+
+export function buildApiUrl(path: string, server: Server = Server.Rest): URL {
+	if (process.env.NODE_ENV === "production") {
+		return new URL(`${location.protocol}//${location.host}${baseApi(server)}${path}`);
+	}
+	return new URL(`${location.protocol}//${location.hostname}${baseApi(server)}${path}`);
 }
 
 export function fetchContestSummary(dispatch: Dispatch, contestId: string): void {

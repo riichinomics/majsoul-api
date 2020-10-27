@@ -36,6 +36,7 @@ function SongPlayer(props: {videoId: string, play?: boolean}): JSX.Element {
 
 export function ContestSummary(props: {contestId: string}): JSX.Element {
 	const contest = useSelector((state: IState) => state.contest);
+
 	const dispatch = useDispatch();
 
 	React.useEffect(() => {
