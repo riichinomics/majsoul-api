@@ -2,7 +2,6 @@ import { Action, Dispatch } from "redux";
 import { Store, Rest } from "majsoul-api";
 import { ThunkAction } from "redux-thunk";
 import { IState, Session, ContestTeam } from "./State";
-import { SplitChunksPlugin } from "webpack";
 
 export type AppThunk<AType extends Action<ActionType>, TReturn = void> =  ThunkAction<TReturn, IState, unknown, AType>;
 
@@ -68,30 +67,36 @@ export interface GetContests extends Action<ActionType.GetContests> {
 
 enum Server {
 	Connector,
-	Rest
+	Rest,
+	OAuth
 }
 
 function baseApi(server: Server): string {
 	switch (server) {
 		case Server.Rest: {
 			if (process.env.NODE_ENV === "production") {
-				return "/api/riichi/";
+				return "riichi";
 			}
-			return ":9515/";
+			return "9515";
 		} case Server.Connector: {
 			if (process.env.NODE_ENV === "production") {
-				return "/api/majsoul/";
+				return "majsoul";
 			}
-			return ":9516/";
+			return "9516";
+		} case Server.OAuth: {
+			if (process.env.NODE_ENV === "production") {
+				return "rigging";
+			}
+			return "9517";
 		}
 	}
 }
 
 export function buildApiUrl(path: string, server: Server = Server.Rest): URL {
 	if (process.env.NODE_ENV === "production") {
-		return new URL(`${location.protocol}//${location.host}${baseApi(server)}${path}`);
+		return new URL(`${location.protocol}//${location.host}/api/${baseApi(server)}/${path}`);
 	}
-	return new URL(`${location.protocol}//${location.hostname}${baseApi(server)}${path}`);
+	return new URL(`${location.protocol}//${location.hostname}:${baseApi(server)}/${path}`);
 }
 
 export function fetchContestSummary(dispatch: Dispatch, contestId: string): void {
@@ -197,7 +202,7 @@ export interface GetRiggingTokenOptions {
 
 export const getRiggingToken = (params: GetRiggingTokenOptions): AppThunk<RiggingTokenAquired, Promise<boolean>> => {
 	return function (dispatch) {
-		const url = buildApiUrl(`rigging/token`);
+		const url = buildApiUrl(`token`, Server.OAuth);
 		return fetch(
 			url.toString(),
 			{

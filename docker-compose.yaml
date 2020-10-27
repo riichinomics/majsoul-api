@@ -25,9 +25,18 @@ services:
     image: majsoul-api
     secrets:
       - majsoul.json
-      - riichi.key.pem
       - riichi.crt.pem
     entrypoint: ["node", "/dist/rest-api.js"]
+
+  riichi-auth:
+    build:
+      context: ./api
+    image: majsoul-api
+    secrets:
+      - majsoul.json
+      - riichi.key.pem
+      - riichi.crt.pem
+    entrypoint: ["node", "/dist/auth-server.js"]
 
   mongo:
     restart: always
@@ -49,7 +58,6 @@ secrets:
     file: ./riichi.key.pem
   riichi.crt.pem:
     file: ./riichi.crt.pem
-
 
 volumes:
   mongo-db-data:

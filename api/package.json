@@ -5,8 +5,9 @@
   "typings": "dist/index.d.ts",
   "module": "dist/index.js",
   "scripts": {
-    "connect": "node -r source-map-support/register ./dist/connector.js",
-    "rest": "node -r source-map-support/register ./dist/rest-api.js"
+    "connect": "node --unhandled-rejections=strict -r source-map-support/register ./dist/connector.js",
+    "rest": "node --unhandled-rejections=strict -r source-map-support/register ./dist/rest-api.js",
+    "auth": "node --unhandled-rejections=strict -r source-map-support/register ./dist/auth-server.js"
   },
   "author": "",
   "license": "MIT",

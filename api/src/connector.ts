@@ -1,6 +1,7 @@
 import { Spreadsheet } from "./google";
 import * as fs from "fs";
-import * as util from "util";
+import * as express from 'express';
+import * as cors from "cors";
 
 import { ObjectId } from 'mongodb';
 import * as majsoul from "./majsoul";
@@ -138,6 +139,27 @@ async function main() {
 			}, 5000);
 		}
 	});
+
+	const app = express();
+	app.use(cors());
+	app.use(express.json({limit: "1MB"}));
+
+	app.get<any, store.Contest<ObjectId>[]>('/contests', (req, res) => {
+		this.mongoStore.contestCollection.find({},
+			{
+				projection: {
+					_id: 0,
+					majsoulId: 0,
+					teams: 0,
+					sessions: 0
+				}
+			})
+			.toArray()
+			.then(contests => res.send(contests))
+			.catch(error => res.status(500).send(error));
+	});
+
+	app.listen(9516, () => console.log(`Express started`));
 }
 
-main().catch(e => console.log(e));
+main();
