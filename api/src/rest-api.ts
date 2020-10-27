@@ -338,8 +338,6 @@ async function main () {
 			audience: "riichi.moe",
 			issuer: "riichi.moe",
 			credentialsRequired: true,
-		}).unless({
-			method: "GET"
 		})
 	).use(function (err, req, res, next) {
 		if (err.name === 'UnauthorizedError') {
