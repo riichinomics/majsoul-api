@@ -13,7 +13,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "express-jwt": "^5.3.3",
+    "express-jwt": "^6.0.0",
     "express-validator": "^6.6.1",
     "googleapis": "^51.0.0",
     "install": "^0.13.0",
